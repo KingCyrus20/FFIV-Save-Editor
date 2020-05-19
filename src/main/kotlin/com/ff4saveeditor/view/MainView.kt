@@ -1,5 +1,7 @@
 package com.ff4saveeditor.view
 
+import javafx.application.Application
+import javafx.application.Platform
 import javafx.stage.FileChooser
 import tornadofx.*
 
@@ -14,7 +16,9 @@ class MainView : View("FFIV Save Editor") {
                     val saveFile = fileChooser.showOpenDialog(null)
                 }
                 item("Save")
-                item("Quit")
+                item("Quit").action {
+                    Platform.exit()
+                }
             }
         }
         tabpane {
