@@ -1,11 +1,12 @@
 package com.ff4saveeditor.view
 
-import javafx.application.Application
+import com.ff4saveeditor.model.SaveModel
 import javafx.application.Platform
 import javafx.stage.FileChooser
 import tornadofx.*
 
-class MainView : View("FFIV Save Editor") {
+class MainView: View("FFIV Save Editor") {
+    val saveModel: SaveModel by inject()
     override val root = vbox {
         menubar {
             menu("File") {
@@ -13,25 +14,44 @@ class MainView : View("FFIV Save Editor") {
                     val fileChooser = FileChooser()
                     fileChooser.title = "Open Save File"
                     fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Binary Files", "*.bin"))
-                    val saveFile = fileChooser.showOpenDialog(null)
+                    saveModel.file.value = fileChooser.showOpenDialog(null)
                 }
+
                 item("Save")
+
+                separator()
+
                 item("Quit").action {
                     Platform.exit()
                 }
             }
+
+            menu("Save Slot") {
+                enableWhen(saveModel.dirty)
+                checkmenuitem("Slot 1") {
+
+                }
+
+                checkmenuitem("Slot 2") {
+
+                }
+
+                checkmenuitem("Slot 3") {
+
+                }
+            }
         }
         tabpane {
-            tab("Slot 1") {
-
+            tab("Characters") {
+                isClosable = false
             }
 
-            tab("Slot 2") {
-
+            tab("Inventory") {
+                isClosable = false
             }
 
-            tab("Slot 3") {
-
+            tab("Bestiary") {
+                isClosable = false
             }
         }
     }
