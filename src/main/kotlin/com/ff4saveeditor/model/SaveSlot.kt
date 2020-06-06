@@ -6,9 +6,7 @@ import tornadofx.*
 
 class SaveSlot() {
     val gilProperty = SimpleIntegerProperty()
-    var gil by gilProperty
     val selectedProperty = SimpleBooleanProperty()
-    var selected by selectedProperty
 }
 
 class SaveSlotModel(saveSlot: SaveSlot) : ItemViewModel<SaveSlot>(saveSlot) {

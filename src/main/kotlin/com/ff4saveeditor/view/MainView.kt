@@ -13,7 +13,6 @@ class MainView: View("FFIV Save Editor") {
     private val saveFileCtrl: SaveFileController by inject()
     private val saveFile = saveFileCtrl.saveFile
     private val saveSlots = saveFile.saveSlotControllers.value
-    private var currentSlotCtrl = saveSlots[0]
 
     override val root = form {
         menubar {
@@ -42,37 +41,30 @@ class MainView: View("FFIV Save Editor") {
                 checkmenuitem("Slot 1") {
                     bind(saveSlots[0].saveSlot.selected)
                     setOnAction {
-                        saveSlots[0].select()
-                        saveSlots[1].deselect()
-                        saveSlots[2].deselect()
-                        currentSlotCtrl = saveSlots[0]
+                        saveFileCtrl.chooseSlot(0)
                     }
                 }
 
                 checkmenuitem("Slot 2") {
                     bind(saveSlots[1].saveSlot.selected)
                     setOnAction {
-                        saveSlots[0].deselect()
-                        saveSlots[1].select()
-                        saveSlots[2].deselect()
-                        currentSlotCtrl = saveSlots[1]
+                        saveFileCtrl.chooseSlot(1)
                     }
                 }
 
                 checkmenuitem("Slot 3") {
                     bind(saveSlots[2].saveSlot.selected)
                     setOnAction {
-                        saveSlots[0].deselect()
-                        saveSlots[1].deselect()
-                        saveSlots[2].select()
-                        currentSlotCtrl = saveSlots[2]
+                        saveFileCtrl.chooseSlot(2)
                     }
                 }
             }
         }
         fieldset("General") {
             field("Gil") {
-                textfield(currentSlotCtrl.saveSlot.gil)
+                textfield() {
+                    bind(saveFile.currentSlot.select { it.saveSlot.gil })
+                }
             }
         }
         tabpane {
