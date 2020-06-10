@@ -60,11 +60,47 @@ class MainView: View("FFIV Save Editor") {
                 }
             }
         }
-        fieldset("General") {
-            field("Gil") {
-                textfield() {
-                    bind(saveFile.currentSlot.select { it.saveSlot.gil })
+        hbox {
+            fieldset() {
+                field("Gil") {
+                    textfield() {
+                        bind(saveFile.currentSlot.select { it.saveSlot.gil })
+                    }
                 }
+                paddingHorizontal = 10
+            }
+            label("Playtime:") {
+                paddingVertical = 15
+            }
+            fieldset() {
+                field("H:") {
+                    textfield() {
+                        bind(saveFile.currentSlot.select { it.saveSlot.hours })
+                        minWidth = 40.0
+                        maxWidth = 40.0
+                    }
+                }
+                paddingHorizontal = 10
+            }
+            fieldset {
+                field("M:") {
+                    textfield() {
+                        bind(saveFile.currentSlot.select { it.saveSlot.minutes })
+                        minWidth = 40.0
+                        maxWidth = 40.0
+                    }
+                }
+                paddingHorizontal = 10
+            }
+            fieldset {
+                field("S:") {
+                    textfield() {
+                        bind(saveFile.currentSlot.select { it.saveSlot.seconds })
+                        minWidth = 40.0
+                        maxWidth = 40.0
+                    }
+                }
+                paddingHorizontal = 10
             }
         }
         tabpane {

@@ -37,25 +37,26 @@ class SaveFileController: Controller() {
     private val saveFileScope = SaveFileScope()
     val saveFile = saveFileScope.saveFile
     private val saveSlots: ObservableList<SaveSlotController> = saveFile.saveSlotControllers.value
+    var reader: FileChannel? = null
 
     init {
         saveFile.loaded.value = false
     }
 
     fun loadSave(f: File) {
-        val reader = FileChannel.open(f.toPath(), StandardOpenOption.READ)
+        reader = FileChannel.open(f.toPath(), StandardOpenOption.READ)
         var slotOffset = 0L
 //      Read data from file into each save slot, adjust slotOffset to next "cd1000" string each iteration
         saveSlots.forEach() {
-            reader.position(slotOffset + 0x88)
-            val gilBuffer = ByteBuffer.allocate(4)
-            gilBuffer.order(ByteOrder.LITTLE_ENDIAN)
-            do {
-                reader.read(gilBuffer)
-            } while(gilBuffer.hasRemaining())
-            gilBuffer.flip()
+            val gilBuffer = readData(slotOffset + 0x88, 4)
             it.saveSlot.gil.value = gilBuffer.int
             println(it.saveSlot.gil)
+
+            val timeBuffer = readData(slotOffset + 0x2304, 4)
+            val totalSeconds = timeBuffer.int
+            it.saveSlot.hours.value = totalSeconds / 3600
+            it.saveSlot.minutes.value = totalSeconds % 3600 / 60
+            it.saveSlot.seconds.value = totalSeconds % 3600 % 60
 
             slotOffset += 0x3DC0
 //          TODO: Character loop
@@ -71,5 +72,16 @@ class SaveFileController: Controller() {
             if (i != index) saveSlots[i].deselect()
         }
         saveFile.currentSlot.value = saveSlots[index]
+    }
+
+    private fun readData(position: Long, size: Int): ByteBuffer {
+        reader?.position(position)
+        val dataBuffer = ByteBuffer.allocate(size)
+        dataBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        do {
+            reader?.read(dataBuffer)
+        } while(dataBuffer.hasRemaining())
+        dataBuffer.flip()
+        return dataBuffer
     }
 }
