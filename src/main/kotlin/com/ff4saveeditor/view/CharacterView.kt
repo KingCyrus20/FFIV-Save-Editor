@@ -15,6 +15,38 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                 }
             }
 
+            field("HP: ") {
+                textfield() {
+                    minWidth = 50.0
+                    maxWidth = 50.0
+                    bind(saveFile.currentSlot.select { it.characters[index].character.currHP })
+                }
+
+                label("/")
+
+                textfield() {
+                    minWidth = 50.0
+                    maxWidth = 50.0
+                    bind(saveFile.currentSlot.select { it.characters[index].character.maxHP })
+                }
+            }
+
+            field("MP: ") {
+                textfield() {
+                    minWidth = 40.0
+                    maxWidth = 40.0
+                    bind(saveFile.currentSlot.select { it.characters[index].character.currMP })
+                }
+
+                label("/")
+
+                textfield() {
+                    minWidth = 40.0
+                    maxWidth = 40.0
+                    bind(saveFile.currentSlot.select { it.characters[index].character.maxMP })
+                }
+            }
+
             field("Strength: ") {
                 textfield() {
                     minWidth = 40.0

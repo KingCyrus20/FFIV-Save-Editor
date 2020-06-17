@@ -5,6 +5,10 @@ import tornadofx.*
 
 class Character() {
     val levelProperty = SimpleIntegerProperty()
+    val currHPProperty = SimpleIntegerProperty()
+    val maxHPProperty = SimpleIntegerProperty()
+    val currMPProperty = SimpleIntegerProperty()
+    val maxMPProperty = SimpleIntegerProperty()
     val strengthProperty = SimpleIntegerProperty()
     val speedProperty = SimpleIntegerProperty()
     val staminaProperty = SimpleIntegerProperty()
@@ -14,6 +18,10 @@ class Character() {
 
 class CharacterModel(character: Character) : ItemViewModel<Character>(character) {
     val level = bind(Character::levelProperty)
+    val currHP = bind(Character::currHPProperty)
+    val maxHP = bind(Character::maxHPProperty)
+    val currMP = bind(Character::currMPProperty)
+    val maxMP = bind(Character::maxMPProperty)
     val strength = bind(Character::strengthProperty)
     val speed = bind(Character::speedProperty)
     val stamina = bind(Character::staminaProperty)
@@ -31,6 +39,10 @@ class CharacterController: Controller() {
 
     init {
         character.level.value = 0
+        character.currHP.value = 0
+        character.maxHP.value = 0
+        character.currMP.value = 0
+        character.maxMP.value = 0
         character.strength.value = 0
         character.speed.value = 0
         character.stamina.value = 0

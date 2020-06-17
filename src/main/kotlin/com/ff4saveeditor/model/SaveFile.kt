@@ -63,6 +63,18 @@ class SaveFileController: Controller() {
                 val levelBuffer = readData(slotOffset + charOffset, 1)
                 it.character.level.value = levelBuffer.get().toInt()
 
+                val currHPBuffer = readData(slotOffset + charOffset + 0xC, 4)
+                it.character.currHP.value = currHPBuffer.int
+
+                val maxHPBuffer = readData(slotOffset + charOffset + 0x10, 4)
+                it.character.maxHP.value = maxHPBuffer.int
+
+                val currMPBuffer = readData(slotOffset + charOffset + 0x14, 4)
+                it.character.currMP.value = currMPBuffer.int
+
+                val maxMPBuffer = readData(slotOffset + charOffset + 0x18, 4)
+                it.character.maxMP.value = maxMPBuffer.int
+
                 val strengthBuffer = readData(slotOffset + charOffset + 0x1CA, 1)
                 it.character.strength.value = strengthBuffer.get().toInt()
 
