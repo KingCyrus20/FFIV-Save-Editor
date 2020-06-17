@@ -14,8 +14,8 @@ class MainView: View("FFIV Save Editor") {
     private val saveFileCtrl: SaveFileController by inject()
     private val saveFile = saveFileCtrl.saveFile
     private val saveSlots = saveFile.saveSlotControllers.value
-    val characterViews = List<CharacterView>(14) { i -> CharacterView(i, saveFileCtrl) }
-    val characterNames = listOf("Cecil (Dark Knight)", "Cecil (Paladin)", "Kain", "Rosa", "Rydia (Child)", "Rydia (Adult)", "Tellah",
+    private val characterViews = List<CharacterView>(14) { i -> CharacterView(i, saveFileCtrl) }
+    private val characterNames = listOf("Cecil (Dark Knight)", "Cecil (Paladin)", "Kain", "Rosa", "Rydia (Child)", "Rydia (Adult)", "Tellah",
             "Edward", "Porom", "Palom", "Yang", "Cid", "Edge", "Fusoya")
 
     override val root = form {

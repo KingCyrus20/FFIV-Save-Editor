@@ -1,6 +1,7 @@
 package com.ff4saveeditor.model
 
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 
 class Character() {
@@ -14,6 +15,12 @@ class Character() {
     val staminaProperty = SimpleIntegerProperty()
     val intellectProperty = SimpleIntegerProperty()
     val spiritProperty = SimpleIntegerProperty()
+
+    val rightHandProperty = SimpleStringProperty()
+    val leftHandProperty = SimpleStringProperty()
+    val headProperty = SimpleStringProperty()
+    val bodyProperty = SimpleStringProperty()
+    val armProperty = SimpleStringProperty()
 }
 
 class CharacterModel(character: Character) : ItemViewModel<Character>(character) {
@@ -27,6 +34,12 @@ class CharacterModel(character: Character) : ItemViewModel<Character>(character)
     val stamina = bind(Character::staminaProperty)
     val intellect = bind(Character::intellectProperty)
     val spirit = bind(Character::spiritProperty)
+
+    val rightHand = bind(Character::rightHandProperty)
+    val leftHand = bind(Character::leftHandProperty)
+    val head = bind(Character::headProperty)
+    val body = bind(Character::bodyProperty)
+    val arm = bind(Character::armProperty)
 }
 
 class CharacterScope: Scope() {
@@ -48,5 +61,11 @@ class CharacterController: Controller() {
         character.stamina.value = 0
         character.intellect.value = 0
         character.spirit.value = 0
+
+        character.rightHand.value = "Nothing"
+        character.leftHand.value = "Nothing"
+        character.head.value = "Nothing"
+        character.body.value = "Nothing"
+        character.arm.value = "Nothing"
     }
 }

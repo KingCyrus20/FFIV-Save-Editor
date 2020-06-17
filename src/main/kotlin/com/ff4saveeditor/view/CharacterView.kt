@@ -1,6 +1,8 @@
 package com.ff4saveeditor.view
 
+import com.ff4saveeditor.model.Equipment
 import com.ff4saveeditor.model.SaveFileController
+import javafx.collections.FXCollections
 import tornadofx.*
 
 //Repeatable fragment for character tabs
@@ -92,31 +94,36 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
         fieldset("Equipment: ") {
             field("Right Hand: ") {
                 combobox<String> {
-
+                    bind(saveFile.currentSlot.select { it.characters[index].character.rightHand })
+                    this.items = FXCollections.observableArrayList(Equipment.handMap.values)
                 }
             }
 
             field("Left Hand: ") {
                 combobox<String> {
-
+                    bind(saveFile.currentSlot.select { it.characters[index].character.leftHand })
+                    this.items = FXCollections.observableArrayList(Equipment.handMap.values)
                 }
             }
 
             field("Head: ") {
                 combobox<String> {
-
+                    bind(saveFile.currentSlot.select { it.characters[index].character.head })
+                    this.items = FXCollections.observableArrayList(Equipment.headMap.values)
                 }
             }
 
             field("Body: ") {
                 combobox<String> {
-
+                    bind(saveFile.currentSlot.select { it.characters[index].character.body })
+                    this.items = FXCollections.observableArrayList(Equipment.bodyMap.values)
                 }
             }
 
             field("Arm: ") {
                 combobox<String> {
-
+                    bind(saveFile.currentSlot.select { it.characters[index].character.arm })
+                    this.items = FXCollections.observableArrayList(Equipment.armMap.values)
                 }
             }
         }

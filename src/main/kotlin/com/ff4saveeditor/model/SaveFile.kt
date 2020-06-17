@@ -57,8 +57,8 @@ class SaveFileController: Controller() {
             it.saveSlot.minutes.value = totalSeconds % 3600 / 60
             it.saveSlot.seconds.value = totalSeconds % 3600 % 60
 
-//          Read character stat data TODO: Equipment data
-            var charOffset = 0x9C
+//          Read character data TODO: Fix empty equipment (0xFF9D) from being read as signed int
+            var charOffset = Offsets.firstChar
             it.saveSlot.characterControllers.value.forEach() {
                 val levelBuffer = readData(slotOffset + charOffset, 1)
                 it.character.level.value = levelBuffer.get().toInt()
@@ -90,6 +90,21 @@ class SaveFileController: Controller() {
                 val spiritBuffer = readData(slotOffset + charOffset + Offsets.spirit, 1)
                 it.character.spirit.value = spiritBuffer.get().toInt()
 
+                val rightHandBuffer = readData(slotOffset + charOffset + Offsets.rightHand, 2)
+                it.character.rightHand.value = Equipment.handMap[rightHandBuffer.short.toInt()]
+
+                val leftHandBuffer = readData(slotOffset + charOffset + Offsets.leftHand, 2)
+                it.character.leftHand.value = Equipment.handMap[leftHandBuffer.short.toInt()]
+
+                val headBuffer = readData(slotOffset + charOffset + Offsets.head, 2)
+                it.character.head.value = Equipment.headMap[headBuffer.short.toInt()]
+
+                val bodyBuffer = readData(slotOffset + charOffset + Offsets.body, 2)
+                it.character.body.value = Equipment.bodyMap[bodyBuffer.short.toInt()]
+
+                val armBuffer = readData(slotOffset + charOffset + Offsets.arm, 2)
+                it.character.arm.value = Equipment.armMap[armBuffer.short.toInt()]
+
                 charOffset += Offsets.charSeparation
             }
 
@@ -118,4 +133,5 @@ class SaveFileController: Controller() {
         dataBuffer.flip()
         return dataBuffer
     }
+
 }
