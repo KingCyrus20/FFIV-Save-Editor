@@ -50,7 +50,6 @@ class SaveFileController: Controller() {
         saveSlots.forEach() {
             val gilBuffer = readData(slotOffset + 0x88, 4)
             it.saveSlot.gil.value = gilBuffer.int
-            println(it.saveSlot.gil)
 
             val timeBuffer = readData(slotOffset + 0x2304, 4)
             val totalSeconds = timeBuffer.int
@@ -58,9 +57,31 @@ class SaveFileController: Controller() {
             it.saveSlot.minutes.value = totalSeconds % 3600 / 60
             it.saveSlot.seconds.value = totalSeconds % 3600 % 60
 
-            slotOffset += 0x3DC0
 //          TODO: Character loop
-            var charOffset = 0
+            var charOffset = 0x9C
+            it.saveSlot.characterControllers.value.forEach() {
+                val levelBuffer = readData(slotOffset + charOffset, 1)
+                it.character.level.value = levelBuffer.get().toInt()
+
+                val strengthBuffer = readData(slotOffset + charOffset + 0x1CA, 1)
+                it.character.strength.value = strengthBuffer.get().toInt()
+
+                val staminaBuffer = readData(slotOffset + charOffset + 0x1CB, 1)
+                it.character.stamina.value = staminaBuffer.get().toInt()
+
+                val speedBuffer = readData(slotOffset + charOffset + 0x1CC, 1)
+                it.character.speed.value = speedBuffer.get().toInt()
+
+                val intellectBuffer = readData(slotOffset + charOffset + 0x1CD, 1)
+                it.character.intellect.value = intellectBuffer.get().toInt()
+
+                val spiritBuffer = readData(slotOffset + charOffset + 0x1CE, 1)
+                it.character.spirit.value = spiritBuffer.get().toInt()
+
+                charOffset += 0x1D4
+            }
+
+            slotOffset += 0x3DC0
         }
         saveFile.loaded.value = true
         chooseSlot(0)

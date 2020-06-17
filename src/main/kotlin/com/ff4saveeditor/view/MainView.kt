@@ -5,6 +5,7 @@ import com.ff4saveeditor.model.SaveFileController
 import com.sun.jnlp.ApiDialog
 import javafx.application.Platform
 import javafx.event.Event
+import javafx.geometry.Pos
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
@@ -13,6 +14,7 @@ class MainView: View("FFIV Save Editor") {
     private val saveFileCtrl: SaveFileController by inject()
     private val saveFile = saveFileCtrl.saveFile
     private val saveSlots = saveFile.saveSlotControllers.value
+    val characterViews = List<CharacterView>(14) { i -> CharacterView(i, saveFileCtrl) }
 
     override val root = form {
         menubar {
@@ -104,8 +106,74 @@ class MainView: View("FFIV Save Editor") {
             }
         }
         tabpane {
-            tab("Characters") {
+            tab("Cecil (Dark Knight)") {
                 isClosable = false
+                add(characterViews[0])
+            }
+
+            tab("Cecil (Paladin)") {
+                isClosable = false
+                add(characterViews[1])
+            }
+
+            tab("Kain") {
+                isClosable = false
+                add(characterViews[2])
+            }
+
+            tab("Rosa") {
+                isClosable = false
+                add(characterViews[3])
+            }
+
+            tab("Rydia (Child)") {
+                isClosable = false
+                add(characterViews[4])
+            }
+
+            tab("Rydia (Adult)") {
+                isClosable = false
+                add(characterViews[5])
+            }
+
+            tab("Tellah") {
+                isClosable = false
+                add(characterViews[6])
+            }
+
+            tab("Edward") {
+                isClosable = false
+                add(characterViews[7])
+            }
+
+            tab("Porom") {
+                isClosable = false
+                add(characterViews[8])
+            }
+
+            tab("Palom") {
+                isClosable = false
+                add(characterViews[9])
+            }
+
+            tab("Yang") {
+                isClosable = false
+                add(characterViews[10])
+            }
+
+            tab("Cid") {
+                isClosable = false
+                add(characterViews[11])
+            }
+
+            tab("Edge") {
+                isClosable = false
+                add(characterViews[12])
+            }
+
+            tab("Fusoya") {
+                isClosable = false
+                add(characterViews[13])
             }
 
             tab("Inventory") {

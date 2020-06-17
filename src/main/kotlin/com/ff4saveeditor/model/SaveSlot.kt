@@ -2,6 +2,8 @@ package com.ff4saveeditor.model
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import tornadofx.*
 
 class SaveSlot() {
@@ -10,6 +12,11 @@ class SaveSlot() {
     val hoursProperty = SimpleIntegerProperty()
     val minutesProperty = SimpleIntegerProperty()
     val secondsProperty = SimpleIntegerProperty()
+    val characterControllers: ObservableList<CharacterController> = FXCollections.observableArrayList<CharacterController>()
+
+    init {
+        for (i in 1..14) characterControllers.add(CharacterController())
+    }
 }
 
 class SaveSlotModel(saveSlot: SaveSlot) : ItemViewModel<SaveSlot>(saveSlot) {
@@ -18,6 +25,7 @@ class SaveSlotModel(saveSlot: SaveSlot) : ItemViewModel<SaveSlot>(saveSlot) {
     val hours = bind(SaveSlot::hoursProperty)
     val minutes = bind(SaveSlot::minutesProperty)
     val seconds = bind(SaveSlot::secondsProperty)
+    val characterControllers = bind(SaveSlot::characterControllers)
 }
 
 class SaveSlotScope: Scope() {
@@ -27,6 +35,7 @@ class SaveSlotScope: Scope() {
 class SaveSlotController: Controller() {
     private val saveSlotScope = SaveSlotScope()
     val saveSlot = saveSlotScope.saveSlot
+    val characters: ObservableList<CharacterController> = saveSlot.characterControllers.value
 
     init {
         saveSlot.gil.value = 0
