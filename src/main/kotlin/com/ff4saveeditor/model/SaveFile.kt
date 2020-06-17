@@ -48,52 +48,52 @@ class SaveFileController: Controller() {
         var slotOffset = 0L
 //      Read data from file into each save slot, adjust slotOffset to next "cd1000" string each iteration
         saveSlots.forEach() {
-            val gilBuffer = readData(slotOffset + 0x88, 4)
+            val gilBuffer = readData(slotOffset + Offsets.gil, 4)
             it.saveSlot.gil.value = gilBuffer.int
 
-            val timeBuffer = readData(slotOffset + 0x2304, 4)
+            val timeBuffer = readData(slotOffset + Offsets.time, 4)
             val totalSeconds = timeBuffer.int
             it.saveSlot.hours.value = totalSeconds / 3600
             it.saveSlot.minutes.value = totalSeconds % 3600 / 60
             it.saveSlot.seconds.value = totalSeconds % 3600 % 60
 
-//          TODO: Character loop
+//          Read character stat data TODO: Equipment data
             var charOffset = 0x9C
             it.saveSlot.characterControllers.value.forEach() {
                 val levelBuffer = readData(slotOffset + charOffset, 1)
                 it.character.level.value = levelBuffer.get().toInt()
 
-                val currHPBuffer = readData(slotOffset + charOffset + 0xC, 4)
+                val currHPBuffer = readData(slotOffset + charOffset + Offsets.currHP, 4)
                 it.character.currHP.value = currHPBuffer.int
 
-                val maxHPBuffer = readData(slotOffset + charOffset + 0x10, 4)
+                val maxHPBuffer = readData(slotOffset + charOffset + Offsets.maxHP, 4)
                 it.character.maxHP.value = maxHPBuffer.int
 
-                val currMPBuffer = readData(slotOffset + charOffset + 0x14, 4)
+                val currMPBuffer = readData(slotOffset + charOffset + Offsets.currMP, 4)
                 it.character.currMP.value = currMPBuffer.int
 
-                val maxMPBuffer = readData(slotOffset + charOffset + 0x18, 4)
+                val maxMPBuffer = readData(slotOffset + charOffset + Offsets.maxMP, 4)
                 it.character.maxMP.value = maxMPBuffer.int
 
-                val strengthBuffer = readData(slotOffset + charOffset + 0x1CA, 1)
+                val strengthBuffer = readData(slotOffset + charOffset + Offsets.strength, 1)
                 it.character.strength.value = strengthBuffer.get().toInt()
 
-                val staminaBuffer = readData(slotOffset + charOffset + 0x1CB, 1)
+                val staminaBuffer = readData(slotOffset + charOffset + Offsets.stamina, 1)
                 it.character.stamina.value = staminaBuffer.get().toInt()
 
-                val speedBuffer = readData(slotOffset + charOffset + 0x1CC, 1)
+                val speedBuffer = readData(slotOffset + charOffset + Offsets.speed, 1)
                 it.character.speed.value = speedBuffer.get().toInt()
 
-                val intellectBuffer = readData(slotOffset + charOffset + 0x1CD, 1)
+                val intellectBuffer = readData(slotOffset + charOffset + Offsets.intellect, 1)
                 it.character.intellect.value = intellectBuffer.get().toInt()
 
-                val spiritBuffer = readData(slotOffset + charOffset + 0x1CE, 1)
+                val spiritBuffer = readData(slotOffset + charOffset + Offsets.spirit, 1)
                 it.character.spirit.value = spiritBuffer.get().toInt()
 
-                charOffset += 0x1D4
+                charOffset += Offsets.charSeparation
             }
 
-            slotOffset += 0x3DC0
+            slotOffset += Offsets.slotSeparation
         }
         saveFile.loaded.value = true
         chooseSlot(0)
@@ -107,6 +107,7 @@ class SaveFileController: Controller() {
         saveFile.currentSlot.value = saveSlots[index]
     }
 
+    //Reads data of specified size from save file at specified offset
     private fun readData(position: Long, size: Int): ByteBuffer {
         reader?.position(position)
         val dataBuffer = ByteBuffer.allocate(size)

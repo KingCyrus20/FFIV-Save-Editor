@@ -3,6 +3,7 @@ package com.ff4saveeditor.view
 import com.ff4saveeditor.model.SaveFileController
 import tornadofx.*
 
+//Repeatable fragment for character tabs
 class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
     private val saveFile = saveFileCtrl.saveFile
     override val root = form {
