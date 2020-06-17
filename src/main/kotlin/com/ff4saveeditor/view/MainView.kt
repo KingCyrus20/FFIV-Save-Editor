@@ -15,6 +15,8 @@ class MainView: View("FFIV Save Editor") {
     private val saveFile = saveFileCtrl.saveFile
     private val saveSlots = saveFile.saveSlotControllers.value
     val characterViews = List<CharacterView>(14) { i -> CharacterView(i, saveFileCtrl) }
+    val characterNames = listOf("Cecil (Dark Knight)", "Cecil (Paladin)", "Kain", "Rosa", "Rydia (Child)", "Rydia (Adult)", "Tellah",
+            "Edward", "Porom", "Palom", "Yang", "Cid", "Edge", "Fusoya")
 
     override val root = form {
         menubar {
@@ -106,74 +108,11 @@ class MainView: View("FFIV Save Editor") {
             }
         }
         tabpane {
-            tab("Cecil (Dark Knight)") {
-                isClosable = false
-                add(characterViews[0])
-            }
-
-            tab("Cecil (Paladin)") {
-                isClosable = false
-                add(characterViews[1])
-            }
-
-            tab("Kain") {
-                isClosable = false
-                add(characterViews[2])
-            }
-
-            tab("Rosa") {
-                isClosable = false
-                add(characterViews[3])
-            }
-
-            tab("Rydia (Child)") {
-                isClosable = false
-                add(characterViews[4])
-            }
-
-            tab("Rydia (Adult)") {
-                isClosable = false
-                add(characterViews[5])
-            }
-
-            tab("Tellah") {
-                isClosable = false
-                add(characterViews[6])
-            }
-
-            tab("Edward") {
-                isClosable = false
-                add(characterViews[7])
-            }
-
-            tab("Porom") {
-                isClosable = false
-                add(characterViews[8])
-            }
-
-            tab("Palom") {
-                isClosable = false
-                add(characterViews[9])
-            }
-
-            tab("Yang") {
-                isClosable = false
-                add(characterViews[10])
-            }
-
-            tab("Cid") {
-                isClosable = false
-                add(characterViews[11])
-            }
-
-            tab("Edge") {
-                isClosable = false
-                add(characterViews[12])
-            }
-
-            tab("Fusoya") {
-                isClosable = false
-                add(characterViews[13])
+            //Create character tabs
+            for (i in 0..13) {
+                val cTab = tab(characterNames[i])
+                cTab.add(characterViews[i])
+                cTab.isClosable = false
             }
 
             tab("Inventory") {
