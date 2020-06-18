@@ -110,34 +110,19 @@ class SaveFileController: Controller() {
                 it.character.spirit.value = spiritBuffer.get().toInt()
 
                 val rightHandBuffer = readData(slotOffset + charOffset + Offsets.RIGHT_HAND, 2)
-                when (val rightHandString = Equipment.handMap[rightHandBuffer.short.toInt()]) {
-                    null -> it.character.rightHand.value = "Empty"
-                    else -> it.character.rightHand.value = rightHandString
-                }
+                it.character.rightHand.value = Equipment.handMap[rightHandBuffer.short.toInt()] ?: "Empty"
 
                 val leftHandBuffer = readData(slotOffset + charOffset + Offsets.LEFT_HAND, 2)
-                when (val leftHandString = Equipment.handMap[leftHandBuffer.short.toInt()]) {
-                    null -> it.character.leftHand.value = "Empty"
-                    else -> it.character.leftHand.value = leftHandString
-                }
+                it.character.leftHand.value = Equipment.handMap[leftHandBuffer.short.toInt()] ?: "Empty"
 
                 val headBuffer = readData(slotOffset + charOffset + Offsets.HEAD, 2)
-                when (val headString = Equipment.headMap[headBuffer.short.toInt()]) {
-                    null -> it.character.head.value = "Empty"
-                    else -> it.character.head.value = headString
-                }
+                it.character.head.value = Equipment.headMap[headBuffer.short.toInt()] ?: "Empty"
 
                 val bodyBuffer = readData(slotOffset + charOffset + Offsets.BODY, 2)
-                when (val bodyString = Equipment.bodyMap[bodyBuffer.short.toInt()]) {
-                    null -> it.character.body.value = "Empty"
-                    else -> it.character.body.value = bodyString
-                }
+                it.character.body.value = Equipment.bodyMap[bodyBuffer.short.toInt()] ?: "Empty"
 
                 val armBuffer = readData(slotOffset + charOffset + Offsets.ARM, 2)
-                when (val armString = Equipment.armMap[armBuffer.short.toInt()]) {
-                    null -> it.character.arm.value = "Empty"
-                    else -> it.character.arm.value = armString
-                }
+                it.character.arm.value = Equipment.armMap[armBuffer.short.toInt()] ?: "Empty"
 
                 charOffset += Offsets.CHAR_SEPARATION
             }

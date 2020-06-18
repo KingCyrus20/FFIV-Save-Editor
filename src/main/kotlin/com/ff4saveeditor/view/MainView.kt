@@ -4,15 +4,11 @@ import com.ff4saveeditor.model.InventoryEntry
 import com.ff4saveeditor.model.Items
 import com.ff4saveeditor.model.SaveFile
 import com.ff4saveeditor.model.SaveFileController
-import com.sun.jnlp.ApiDialog
 import javafx.application.Platform
 import javafx.collections.FXCollections
-import javafx.event.Event
-import javafx.geometry.Pos
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
-import java.lang.IllegalArgumentException
 
 class MainView: View("FFIV Save Editor") {
     private val saveFileCtrl: SaveFileController by inject()
@@ -23,6 +19,7 @@ class MainView: View("FFIV Save Editor") {
             "Edward", "Porom", "Palom", "Yang", "Cid", "Edge", "Fusoya")
 
     override val root = form {
+        paddingAll = 0
         menubar {
             menu("File") {
                 item("Open").action {
@@ -30,7 +27,7 @@ class MainView: View("FFIV Save Editor") {
                     fileChooser.title = "Open Save File"
                     fileChooser.initialDirectory = File(System.getenv("LOCALAPPDATA") + "\\FF4")
                     fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Binary Files", "*.bin"))
-                    val f = fileChooser.showOpenDialog(null)
+                    val f = fileChooser.showOpenDialog(currentWindow)
                     if (f != null) {
                         saveFileCtrl.loadSave(f)
                     }
