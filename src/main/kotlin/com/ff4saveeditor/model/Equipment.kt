@@ -4,8 +4,6 @@ package com.ff4saveeditor.model
 class Equipment {
     companion object {
         val handMap = mapOf(
-                0xFF9D to "Nothing",
-
                 //Swords
                 0x1771 to "Dark Sword",
                 0x1772 to "Shadowblade",
@@ -145,8 +143,6 @@ class Equipment {
         )
 
         val headMap = mapOf(
-                0xFF9D to "Nothing",
-
                 //Helms
                 0x1FA5 to "Leather Cap",
                 0x1FA6 to "Headband",
@@ -172,8 +168,6 @@ class Equipment {
         )
 
         val bodyMap = mapOf(
-                0xFF9D to "Nothing",
-
                 //Armor
                 0x2009 to "Clothing",
                 0x200A to "Prison Garb",
@@ -206,8 +200,6 @@ class Equipment {
         )
 
         val armMap = mapOf(
-                0xFF9D to "Nothing",
-
                 //Gloves
                 0x206D to "Ruby Ring",
                 0x206E to "Cursed Ring",

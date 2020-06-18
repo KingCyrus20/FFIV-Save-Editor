@@ -11,7 +11,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
     override val root = form {
         fieldset("Stats: ") {
             field("Level: ") {
-                textfield() {
+                textfield {
                     minWidth = 40.0
                     maxWidth = 40.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.level })
@@ -19,7 +19,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
             }
 
             field("HP: ") {
-                textfield() {
+                textfield {
                     minWidth = 50.0
                     maxWidth = 50.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.currHP })
@@ -27,7 +27,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
 
                 label("/")
 
-                textfield() {
+                textfield {
                     minWidth = 50.0
                     maxWidth = 50.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.maxHP })
@@ -35,7 +35,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
             }
 
             field("MP: ") {
-                textfield() {
+                textfield {
                     minWidth = 40.0
                     maxWidth = 40.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.currMP })
@@ -43,7 +43,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
 
                 label("/")
 
-                textfield() {
+                textfield {
                     minWidth = 40.0
                     maxWidth = 40.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.maxMP })
@@ -51,7 +51,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
             }
 
             field("Strength: ") {
-                textfield() {
+                textfield {
                     minWidth = 40.0
                     maxWidth = 40.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.strength })
@@ -59,7 +59,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
             }
 
             field("Speed: ") {
-                textfield() {
+                textfield {
                     minWidth = 40.0
                     maxWidth = 40.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.speed })
@@ -67,7 +67,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
             }
 
             field("Stamina: ") {
-                textfield() {
+                textfield {
                     minWidth = 40.0
                     maxWidth = 40.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.stamina })
@@ -75,7 +75,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
             }
 
             field("Intellect: ") {
-                textfield() {
+                textfield {
                     minWidth = 40.0
                     maxWidth = 40.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.intellect })
@@ -83,7 +83,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
             }
 
             field("Spirit: ") {
-                textfield() {
+                textfield {
                     minWidth = 40.0
                     maxWidth = 40.0
                     bind(saveFile.currentSlot.select { it.characters[index].character.spirit })
@@ -94,36 +94,41 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
         fieldset("Equipment: ") {
             field("Right Hand: ") {
                 combobox<String> {
-                    bind(saveFile.currentSlot.select { it.characters[index].character.rightHand })
                     this.items = FXCollections.observableArrayList(Equipment.handMap.values)
+                    this.items.add(0, "Empty")
+                    bind(saveFile.currentSlot.select { it.characters[index].character.rightHand })
                 }
             }
 
             field("Left Hand: ") {
                 combobox<String> {
-                    bind(saveFile.currentSlot.select { it.characters[index].character.leftHand })
                     this.items = FXCollections.observableArrayList(Equipment.handMap.values)
+                    this.items.add(0, "Empty")
+                    bind(saveFile.currentSlot.select { it.characters[index].character.leftHand })
                 }
             }
 
             field("Head: ") {
                 combobox<String> {
-                    bind(saveFile.currentSlot.select { it.characters[index].character.head })
                     this.items = FXCollections.observableArrayList(Equipment.headMap.values)
+                    this.items.add(0, "Empty")
+                    bind(saveFile.currentSlot.select { it.characters[index].character.head })
                 }
             }
 
             field("Body: ") {
                 combobox<String> {
-                    bind(saveFile.currentSlot.select { it.characters[index].character.body })
                     this.items = FXCollections.observableArrayList(Equipment.bodyMap.values)
+                    this.items.add(0, "Empty")
+                    bind(saveFile.currentSlot.select { it.characters[index].character.body })
                 }
             }
 
             field("Arm: ") {
                 combobox<String> {
-                    bind(saveFile.currentSlot.select { it.characters[index].character.arm })
                     this.items = FXCollections.observableArrayList(Equipment.armMap.values)
+                    this.items.add(0, "Empty")
+                    bind(saveFile.currentSlot.select { it.characters[index].character.arm })
                 }
             }
         }

@@ -3,8 +3,9 @@ package com.ff4saveeditor.model
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
+import java.nio.channels.FileChannel
 
-class Character() {
+class Character {
     val levelProperty = SimpleIntegerProperty()
     val currHPProperty = SimpleIntegerProperty()
     val maxHPProperty = SimpleIntegerProperty()
@@ -62,10 +63,10 @@ class CharacterController: Controller() {
         character.intellect.value = 0
         character.spirit.value = 0
 
-        character.rightHand.value = "Nothing"
-        character.leftHand.value = "Nothing"
-        character.head.value = "Nothing"
-        character.body.value = "Nothing"
-        character.arm.value = "Nothing"
+        character.rightHand.value = "Empty"
+        character.leftHand.value = "Empty"
+        character.head.value = "Empty"
+        character.body.value = "Empty"
+        character.arm.value = "Empty"
     }
 }

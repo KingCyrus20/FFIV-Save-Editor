@@ -1,14 +1,18 @@
 package com.ff4saveeditor.view
 
+import com.ff4saveeditor.model.InventoryEntry
+import com.ff4saveeditor.model.Items
 import com.ff4saveeditor.model.SaveFile
 import com.ff4saveeditor.model.SaveFileController
 import com.sun.jnlp.ApiDialog
 import javafx.application.Platform
+import javafx.collections.FXCollections
 import javafx.event.Event
 import javafx.geometry.Pos
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
+import java.lang.IllegalArgumentException
 
 class MainView: View("FFIV Save Editor") {
     private val saveFileCtrl: SaveFileController by inject()
@@ -24,6 +28,7 @@ class MainView: View("FFIV Save Editor") {
                 item("Open").action {
                     val fileChooser = FileChooser()
                     fileChooser.title = "Open Save File"
+                    fileChooser.initialDirectory = File(System.getenv("LOCALAPPDATA") + "\\FF4")
                     fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Binary Files", "*.bin"))
                     val f = fileChooser.showOpenDialog(null)
                     if (f != null) {
@@ -65,9 +70,9 @@ class MainView: View("FFIV Save Editor") {
             }
         }
         hbox {
-            fieldset() {
+            fieldset {
                 field("Gil") {
-                    textfield() {
+                    textfield {
                         bind(saveFile.currentSlot.select { it.saveSlot.gil })
                     }
                 }
@@ -76,9 +81,9 @@ class MainView: View("FFIV Save Editor") {
             label("Playtime:") {
                 paddingVertical = 15
             }
-            fieldset() {
+            fieldset {
                 field("H:") {
-                    textfield() {
+                    textfield {
                         bind(saveFile.currentSlot.select { it.saveSlot.hours })
                         minWidth = 40.0
                         maxWidth = 40.0
@@ -88,7 +93,7 @@ class MainView: View("FFIV Save Editor") {
             }
             fieldset {
                 field("M:") {
-                    textfield() {
+                    textfield {
                         bind(saveFile.currentSlot.select { it.saveSlot.minutes })
                         minWidth = 40.0
                         maxWidth = 40.0
@@ -98,7 +103,7 @@ class MainView: View("FFIV Save Editor") {
             }
             fieldset {
                 field("S:") {
-                    textfield() {
+                    textfield {
                         bind(saveFile.currentSlot.select { it.saveSlot.seconds })
                         minWidth = 40.0
                         maxWidth = 40.0
@@ -117,6 +122,17 @@ class MainView: View("FFIV Save Editor") {
 
             tab("Inventory") {
                 isClosable = false
+                tableview(saveFile.currentSlot.select { it.saveSlot.inventory }){
+                    column("Item", InventoryEntry::nameProperty) {
+                        makeEditable()
+                        prefWidth(200.0)
+                        useComboBox(FXCollections.observableArrayList(Items.universalMap.values))
+                    }
+
+                    column("Quantity", InventoryEntry::quantityProperty) {
+                        makeEditable()
+                    }
+                }
             }
 
             tab("Bestiary") {
