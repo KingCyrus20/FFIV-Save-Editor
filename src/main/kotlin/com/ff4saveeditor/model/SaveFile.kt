@@ -76,6 +76,30 @@ class SaveFileController: Controller() {
                 quantityOffset += Offsets.ITEM_SEPARATION
             }
 
+//          Read bestiary
+            for (monsterOffset in Monsters.monsterMap.keys) {
+                val monsterBuffer = readData(slotOffset + monsterOffset, 2)
+                val monsterValue = monsterBuffer.short.toInt()
+                val numSlain = (monsterValue and 0x00F0)/16 + (monsterValue and 0x0F00)/16 + (monsterValue and 0xF000)/16
+                val isNew: Boolean
+                val isSeen: Boolean
+                when(val infoNibble = monsterValue and 0x000F) {
+                    1 -> {
+                        isSeen = true
+                        isNew = false
+                    }
+                    3 -> {
+                        isSeen = true
+                        isNew = true
+                    }
+                    else -> {
+                        isSeen = false
+                        isNew = false
+                    }
+                }
+                it.saveSlot.bestiary.value.add(BestiaryEntry(Monsters.monsterMap[monsterOffset], isSeen, isNew, numSlain))
+            }
+
 //          Read character data
             var charOffset = Offsets.FIRST_CHAR
             it.saveSlot.characterControllers.value.forEach {

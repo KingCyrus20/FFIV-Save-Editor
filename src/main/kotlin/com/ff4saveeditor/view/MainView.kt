@@ -1,11 +1,9 @@
 package com.ff4saveeditor.view
 
-import com.ff4saveeditor.model.InventoryEntry
-import com.ff4saveeditor.model.Items
-import com.ff4saveeditor.model.SaveFile
-import com.ff4saveeditor.model.SaveFileController
+import com.ff4saveeditor.model.*
 import javafx.application.Platform
 import javafx.collections.FXCollections
+import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
@@ -130,10 +128,33 @@ class MainView: View("FFIV Save Editor") {
                         makeEditable()
                     }
                 }
+                hgrow = Priority.ALWAYS
+                vgrow = Priority.ALWAYS
             }
 
             tab("Bestiary") {
                 isClosable = false
+                tableview(saveFile.currentSlot.select { it.saveSlot.bestiary }){
+                    column("Name", BestiaryEntry::nameProperty) {
+                        isEditable = false
+                        prefWidth(150.0)
+                    }
+
+                    column("Seen", BestiaryEntry::seenProperty) {
+                        useCheckbox(true)
+                    }
+
+                    column("New", BestiaryEntry::newProperty) {
+                        useCheckbox(true)
+                    }
+
+                    column("Number Slain", BestiaryEntry::numSlainProperty) {
+                        makeEditable()
+                        prefWidth(100.0)
+                    }
+                }
+                hgrow = Priority.ALWAYS
+                vgrow = Priority.ALWAYS
             }
         }
     }
