@@ -1,7 +1,10 @@
 package com.ff4saveeditor.model
 
+import com.ff4saveeditor.app.InventoryEvent
+import com.ff4saveeditor.app.InventoryRequest
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -11,6 +14,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
+import java.util.*
 
 class SaveFile {
     val saveSlotControllers: ObservableList<SaveSlotController> = FXCollections.observableArrayList<SaveSlotController>()
@@ -41,13 +45,20 @@ class SaveFileController: Controller() {
 
     init {
         saveFile.loaded.value = false
+        subscribe<InventoryRequest> {
+            val inventory = saveFile.currentSlot.value.saveSlot.inventory.value
+            fire(InventoryEvent(inventory))
+        }
     }
 
     fun loadSave(f: File) {
         reader = FileChannel.open(f.toPath(), StandardOpenOption.READ)
         var slotOffset = 0L
+
 //      Read data from file into each save slot, adjust slotOffset to next "cd1000" string each iteration
         saveSlots.forEach {
+            it.clear()
+
             val gilBuffer = readData(slotOffset + Offsets.GIL, 4)
             it.saveSlot.gil.value = gilBuffer.int
 
@@ -81,22 +92,8 @@ class SaveFileController: Controller() {
                 val monsterBuffer = readData(slotOffset + monsterOffset, 2)
                 val monsterValue = monsterBuffer.short.toInt()
                 val numSlain = (monsterValue and 0x00F0)/16 + (monsterValue and 0x0F00)/16 + (monsterValue and 0xF000)/16
-                val isNew: Boolean
-                val isSeen: Boolean
-                when(val infoNibble = monsterValue and 0x000F) {
-                    1 -> {
-                        isSeen = true
-                        isNew = false
-                    }
-                    3 -> {
-                        isSeen = true
-                        isNew = true
-                    }
-                    else -> {
-                        isSeen = false
-                        isNew = false
-                    }
-                }
+                val isNew = (monsterValue and 0x0002) shr 1 == 1
+                val isSeen = (monsterValue and 0x0001) == 1
                 it.saveSlot.bestiary.value.add(BestiaryEntry(Monsters.monsterMap[monsterOffset], isSeen, isNew, numSlain))
             }
 
@@ -163,6 +160,7 @@ class SaveFileController: Controller() {
             if (i != index) saveSlots[i].deselect()
         }
         saveFile.currentSlot.value = saveSlots[index]
+        fire(InventoryRequest())
     }
 
     //Reads data of specified size from save file at specified offset

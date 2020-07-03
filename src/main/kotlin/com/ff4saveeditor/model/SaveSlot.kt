@@ -1,11 +1,15 @@
 package com.ff4saveeditor.model
 
+import com.ff4saveeditor.app.InventoryEvent
+import com.ff4saveeditor.app.InventoryRequest
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleListProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import tornadofx.*
+import java.nio.channels.FileChannel
 
 class SaveSlot {
     val gilProperty = SimpleIntegerProperty()
@@ -14,6 +18,7 @@ class SaveSlot {
     val minutesProperty = SimpleIntegerProperty()
     val secondsProperty = SimpleIntegerProperty()
     val inventoryProperty = SimpleListProperty<InventoryEntry>(FXCollections.observableArrayList<InventoryEntry>())
+    val selectedItemProperty = SimpleObjectProperty<InventoryEntry>()
     val itemCountProperty = SimpleIntegerProperty()
     val bestiaryProperty = SimpleListProperty<BestiaryEntry>(FXCollections.observableArrayList<BestiaryEntry>())
     val characterControllers: ObservableList<CharacterController> = FXCollections.observableArrayList<CharacterController>()
@@ -30,6 +35,7 @@ class SaveSlotModel(saveSlot: SaveSlot) : ItemViewModel<SaveSlot>(saveSlot) {
     val minutes = bind(SaveSlot::minutesProperty)
     val seconds = bind(SaveSlot::secondsProperty)
     val inventory = bind(SaveSlot::inventoryProperty)
+    val selectedItem = bind(SaveSlot::selectedItemProperty)
     val itemCount = bind(SaveSlot::itemCountProperty)
     val bestiary = bind(SaveSlot::bestiaryProperty)
     val characterControllers = bind(SaveSlot::characterControllers)
@@ -50,7 +56,9 @@ class SaveSlotController: Controller() {
         saveSlot.hours.value = 0
         saveSlot.minutes.value = 0
         saveSlot.seconds.value = 0
+        saveSlot.inventory.value = FXCollections.observableArrayList()
         saveSlot.itemCount.value = 0
+        saveSlot.bestiary.value = FXCollections.observableArrayList()
     }
 
     fun select() {
@@ -59,5 +67,16 @@ class SaveSlotController: Controller() {
 
     fun deselect() {
         saveSlot.selected.value = false
+    }
+
+    fun clear() {
+        saveSlot.gil.value = 0
+        saveSlot.selected.value = false
+        saveSlot.hours.value = 0
+        saveSlot.minutes.value = 0
+        saveSlot.seconds.value = 0
+        saveSlot.inventory.value = FXCollections.observableArrayList()
+        saveSlot.itemCount.value = 0
+        saveSlot.bestiary.value = FXCollections.observableArrayList()
     }
 }

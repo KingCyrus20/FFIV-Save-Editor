@@ -1,10 +1,13 @@
 package com.ff4saveeditor.view
 
+import com.ff4saveeditor.app.InventoryEvent
+import com.ff4saveeditor.app.InventoryRequest
 import com.ff4saveeditor.model.*
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
+import javafx.util.StringConverter
 import tornadofx.*
 import java.io.File
 
@@ -117,19 +120,51 @@ class MainView: View("FFIV Save Editor") {
 
             tab("Inventory") {
                 isClosable = false
-                tableview(saveFile.currentSlot.select { it.saveSlot.inventory }){
-                    column("Item", InventoryEntry::nameProperty) {
-                        makeEditable()
-                        prefWidth(200.0)
-                        useComboBox(FXCollections.observableArrayList(Items.universalMap.values))
-                    }
+                form {
+                    vbox(50) {
+                        fieldset("Change Item Quantity") {
+                            field("Item") {
+                                combobox<InventoryEntry>(saveFile.currentSlot.select { it.saveSlot.selectedItem }) {
+                                    isEditable = true
+                                    makeAutocompletable()
+                                    subscribe<InventoryEvent> { event ->
+                                        items.setAll(event.inventory)
+                                    }
+                                    converter = ItemConverter(items)
+                                }
+                            }
 
-                    column("Quantity", InventoryEntry::quantityProperty) {
-                        makeEditable()
+                            field("Quantity") {
+                                textfield {
+                                    maxWidth = 40.0
+                                    minWidth = 40.0
+                                    bind(saveFile.currentSlot.select { it.saveSlot.selectedItem.select { it.quantityProperty } })
+                                }
+                            }
+                        }
+
+                        fieldset("Add Item") {
+                            field("Item") {
+                                combobox<String>() {
+                                    isEditable = true
+                                    makeAutocompletable()
+                                    items.setAll(Items.universalMap.values)
+                                }
+                            }
+
+                            field("Quantity") {
+                                textfield {
+                                    maxWidth = 40.0
+                                    minWidth = 40.0
+                                }
+                            }
+
+                            button("Add") {
+
+                            }
+                        }
                     }
                 }
-                hgrow = Priority.ALWAYS
-                vgrow = Priority.ALWAYS
             }
 
             tab("Bestiary") {
