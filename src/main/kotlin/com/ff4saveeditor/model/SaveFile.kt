@@ -41,8 +41,6 @@ class SaveFileController: Controller() {
     private val saveFileScope = SaveFileScope()
     val saveFile = saveFileScope.saveFile
     private val saveSlots: ObservableList<SaveSlotController> = saveFile.saveSlotControllers.value
-    var reader: FileChannel? = null
-    var writer: FileChannel? = null
     var file: File? = null
 
     init {
@@ -55,24 +53,24 @@ class SaveFileController: Controller() {
 
     fun loadSave(f: File) {
         file = f
-        reader = FileChannel.open(file!!.toPath(), StandardOpenOption.READ)
+        val reader = FileChannel.open(file!!.toPath(), StandardOpenOption.READ)
         var slotOffset = 0L
 
 //      Read data from file into each save slot, adjust slotOffset to next "cd1000" string each iteration
         saveSlots.forEach {
             it.clear()
 
-            val gilBuffer = readData(slotOffset + Offsets.GIL, 4)
+            val gilBuffer = reader.readData(slotOffset + Offsets.GIL, 4)
             it.saveSlot.gil.value = gilBuffer.int
 
-            val timeBuffer = readData(slotOffset + Offsets.TIME, 4)
+            val timeBuffer = reader.readData(slotOffset + Offsets.TIME, 4)
             val totalSeconds = timeBuffer.int
             it.saveSlot.hours.value = totalSeconds / 3600
             it.saveSlot.minutes.value = totalSeconds % 3600 / 60
             it.saveSlot.seconds.value = totalSeconds % 3600 % 60
 
 //          Read inventory
-            val itemCountBuffer = readData(slotOffset + Offsets.ITEM_COUNT, 4)
+            val itemCountBuffer = reader.readData(slotOffset + Offsets.ITEM_COUNT, 4)
             val itemCount = itemCountBuffer.int
             it.saveSlot.itemCount.value = itemCount
 
@@ -80,8 +78,8 @@ class SaveFileController: Controller() {
             var quantityOffset = Offsets.FIRST_QUANTITY
 
             for (i in 1..itemCount) {
-                val itemBuffer = readData(slotOffset + itemOffset, 2)
-                val quantityBuffer = readData(slotOffset + quantityOffset, 2)
+                val itemBuffer = reader.readData(slotOffset + itemOffset, 2)
+                val quantityBuffer = reader.readData(slotOffset + quantityOffset, 2)
                 val item = itemBuffer.short.toInt()
                 val quantity = quantityBuffer.short.toInt()
 
@@ -92,7 +90,7 @@ class SaveFileController: Controller() {
 
 //          Read bestiary
             for (monsterOffset in Monsters.monsterMap.keys) {
-                val monsterBuffer = readData(slotOffset + monsterOffset, 2)
+                val monsterBuffer = reader.readData(slotOffset + monsterOffset, 2)
                 val monsterValue = monsterBuffer.short.toInt()
                 val numSlain = (monsterValue and 0xFFF0)/16
                 val isNew = (monsterValue and 0x0002) shr 1 == 1
@@ -103,49 +101,49 @@ class SaveFileController: Controller() {
 //          Read character data
             var charOffset = Offsets.FIRST_CHAR
             it.saveSlot.characterControllers.value.forEach {
-                val levelBuffer = readData(slotOffset + charOffset, 1)
+                val levelBuffer = reader.readData(slotOffset + charOffset, 1)
                 it.character.level.value = levelBuffer.get().toInt()
 
-                val currHPBuffer = readData(slotOffset + charOffset + Offsets.CURR_HP, 4)
+                val currHPBuffer = reader.readData(slotOffset + charOffset + Offsets.CURR_HP, 4)
                 it.character.currHP.value = currHPBuffer.int
 
-                val maxHPBuffer = readData(slotOffset + charOffset + Offsets.MAX_HP, 4)
+                val maxHPBuffer = reader.readData(slotOffset + charOffset + Offsets.MAX_HP, 4)
                 it.character.maxHP.value = maxHPBuffer.int
 
-                val currMPBuffer = readData(slotOffset + charOffset + Offsets.CURR_MP, 4)
+                val currMPBuffer = reader.readData(slotOffset + charOffset + Offsets.CURR_MP, 4)
                 it.character.currMP.value = currMPBuffer.int
 
-                val maxMPBuffer = readData(slotOffset + charOffset + Offsets.MAX_MP, 4)
+                val maxMPBuffer = reader.readData(slotOffset + charOffset + Offsets.MAX_MP, 4)
                 it.character.maxMP.value = maxMPBuffer.int
 
-                val strengthBuffer = readData(slotOffset + charOffset + Offsets.STRENGTH, 1)
+                val strengthBuffer = reader.readData(slotOffset + charOffset + Offsets.STRENGTH, 1)
                 it.character.strength.value = strengthBuffer.get().toInt()
 
-                val staminaBuffer = readData(slotOffset + charOffset + Offsets.STAMINA, 1)
+                val staminaBuffer = reader.readData(slotOffset + charOffset + Offsets.STAMINA, 1)
                 it.character.stamina.value = staminaBuffer.get().toInt()
 
-                val speedBuffer = readData(slotOffset + charOffset + Offsets.SPEED, 1)
+                val speedBuffer = reader.readData(slotOffset + charOffset + Offsets.SPEED, 1)
                 it.character.speed.value = speedBuffer.get().toInt()
 
-                val intellectBuffer = readData(slotOffset + charOffset + Offsets.INTELLECT, 1)
+                val intellectBuffer = reader.readData(slotOffset + charOffset + Offsets.INTELLECT, 1)
                 it.character.intellect.value = intellectBuffer.get().toInt()
 
-                val spiritBuffer = readData(slotOffset + charOffset + Offsets.SPIRIT, 1)
+                val spiritBuffer = reader.readData(slotOffset + charOffset + Offsets.SPIRIT, 1)
                 it.character.spirit.value = spiritBuffer.get().toInt()
 
-                val rightHandBuffer = readData(slotOffset + charOffset + Offsets.RIGHT_HAND, 2)
+                val rightHandBuffer = reader.readData(slotOffset + charOffset + Offsets.RIGHT_HAND, 2)
                 it.character.rightHand.value = Equipment.handMap[rightHandBuffer.short.toInt()] ?: "Empty"
 
-                val leftHandBuffer = readData(slotOffset + charOffset + Offsets.LEFT_HAND, 2)
+                val leftHandBuffer = reader.readData(slotOffset + charOffset + Offsets.LEFT_HAND, 2)
                 it.character.leftHand.value = Equipment.handMap[leftHandBuffer.short.toInt()] ?: "Empty"
 
-                val headBuffer = readData(slotOffset + charOffset + Offsets.HEAD, 2)
+                val headBuffer = reader.readData(slotOffset + charOffset + Offsets.HEAD, 2)
                 it.character.head.value = Equipment.headMap[headBuffer.short.toInt()] ?: "Empty"
 
-                val bodyBuffer = readData(slotOffset + charOffset + Offsets.BODY, 2)
+                val bodyBuffer = reader.readData(slotOffset + charOffset + Offsets.BODY, 2)
                 it.character.body.value = Equipment.bodyMap[bodyBuffer.short.toInt()] ?: "Empty"
 
-                val armBuffer = readData(slotOffset + charOffset + Offsets.ARM, 2)
+                val armBuffer = reader.readData(slotOffset + charOffset + Offsets.ARM, 2)
                 it.character.arm.value = Equipment.armMap[armBuffer.short.toInt()] ?: "Empty"
 
                 charOffset += Offsets.CHAR_SEPARATION
@@ -167,26 +165,26 @@ class SaveFileController: Controller() {
         }
         file?.copyTo(backup)
 
-        writer = FileChannel.open(file?.toPath(), StandardOpenOption.WRITE)
+        val writer = FileChannel.open(file?.toPath(), StandardOpenOption.WRITE)
         var slotOffset = 0L
 
 //      Write from save slot models into save file, adjust slotOffset to next "cd1000" string each iteration
         saveSlots.forEach {
-            writeInt(slotOffset + Offsets.GIL, it.saveSlot.gil.value.toInt())
+            writer.writeInt(slotOffset + Offsets.GIL, it.saveSlot.gil.value.toInt())
 
             val totalSeconds =
                 it.saveSlot.hours.value.toInt() * 3600 + it.saveSlot.minutes.value.toInt() * 60 + it.saveSlot.seconds.value.toInt()
-            writeInt(slotOffset + Offsets.TIME, totalSeconds)
+            writer.writeInt(slotOffset + Offsets.TIME, totalSeconds)
 
 //          Write inventory
-            writeInt(slotOffset + Offsets.ITEM_COUNT, it.saveSlot.inventory.value.size)
+            writer.writeInt(slotOffset + Offsets.ITEM_COUNT, it.saveSlot.inventory.value.size)
 
             var itemOffset = Offsets.FIRST_ITEM
             var quantityOffset = Offsets.FIRST_QUANTITY
 
             for (i in 0 until it.saveSlot.inventory.value.size) {
-                writeShort(slotOffset + itemOffset, it.saveSlot.inventory.value[i].id)
-                writeShort(slotOffset + quantityOffset, it.saveSlot.inventory.value[i].quantity)
+                writer.writeShort(slotOffset + itemOffset, it.saveSlot.inventory.value[i].id)
+                writer.writeShort(slotOffset + quantityOffset, it.saveSlot.inventory.value[i].quantity)
 
                 itemOffset += Offsets.ITEM_SEPARATION
                 quantityOffset += Offsets.ITEM_SEPARATION
@@ -201,41 +199,41 @@ class SaveFileController: Controller() {
                 if (currentMonster.isNew)
                     monsterValue += 0x0002
                 monsterValue += currentMonster.numSlain * 16
-                writeShort(slotOffset + monsterOffset, monsterValue)
+                writer.writeShort(slotOffset + monsterOffset, monsterValue)
             }
 
 //          Write character data
             var charOffset = Offsets.FIRST_CHAR
             it.saveSlot.characterControllers.value.forEach {
-                writeByte(slotOffset + charOffset, it.character.level.value.toInt())
+                writer.writeByte(slotOffset + charOffset, it.character.level.value.toInt())
 
-                writeInt(slotOffset + charOffset + Offsets.CURR_HP, it.character.currHP.value.toInt())
+                writer.writeInt(slotOffset + charOffset + Offsets.CURR_HP, it.character.currHP.value.toInt())
 
-                writeInt(slotOffset + charOffset + Offsets.MAX_HP, it.character.maxHP.value.toInt())
+                writer.writeInt(slotOffset + charOffset + Offsets.MAX_HP, it.character.maxHP.value.toInt())
 
-                writeInt(slotOffset + charOffset + Offsets.CURR_MP, it.character.currMP.value.toInt())
+                writer.writeInt(slotOffset + charOffset + Offsets.CURR_MP, it.character.currMP.value.toInt())
 
-                writeInt(slotOffset + charOffset + Offsets.MAX_MP, it.character.maxMP.value.toInt())
+                writer.writeInt(slotOffset + charOffset + Offsets.MAX_MP, it.character.maxMP.value.toInt())
 
-                writeByte(slotOffset + charOffset + Offsets.STRENGTH, it.character.strength.value.toInt())
+                writer.writeByte(slotOffset + charOffset + Offsets.STRENGTH, it.character.strength.value.toInt())
 
-                writeByte(slotOffset + charOffset + Offsets.STAMINA, it.character.stamina.value.toInt())
+                writer.writeByte(slotOffset + charOffset + Offsets.STAMINA, it.character.stamina.value.toInt())
 
-                writeByte(slotOffset + charOffset + Offsets.SPEED, it.character.speed.value.toInt())
+                writer.writeByte(slotOffset + charOffset + Offsets.SPEED, it.character.speed.value.toInt())
 
-                writeByte(slotOffset + charOffset + Offsets.INTELLECT, it.character.intellect.value.toInt())
+                writer.writeByte(slotOffset + charOffset + Offsets.INTELLECT, it.character.intellect.value.toInt())
 
-                writeByte(slotOffset + charOffset + Offsets.SPIRIT, it.character.spirit.value.toInt())
+                writer.writeByte(slotOffset + charOffset + Offsets.SPIRIT, it.character.spirit.value.toInt())
 
-                writeShort(slotOffset + charOffset + Offsets.RIGHT_HAND, Items.inverseUniversal[it.character.rightHand.value] ?: 0xFF9D)
+                writer.writeShort(slotOffset + charOffset + Offsets.RIGHT_HAND, Items.inverseUniversal[it.character.rightHand.value] ?: 0xFF9D)
 
-                writeShort(slotOffset + charOffset + Offsets.LEFT_HAND, Items.inverseUniversal[it.character.leftHand.value] ?: 0xFF9D)
+                writer.writeShort(slotOffset + charOffset + Offsets.LEFT_HAND, Items.inverseUniversal[it.character.leftHand.value] ?: 0xFF9D)
 
-                writeShort(slotOffset + charOffset + Offsets.HEAD, Items.inverseUniversal[it.character.head.value] ?: 0xFF9D)
+                writer.writeShort(slotOffset + charOffset + Offsets.HEAD, Items.inverseUniversal[it.character.head.value] ?: 0xFF9D)
 
-                writeShort(slotOffset + charOffset + Offsets.BODY, Items.inverseUniversal[it.character.body.value] ?: 0xFF9D)
+                writer.writeShort(slotOffset + charOffset + Offsets.BODY, Items.inverseUniversal[it.character.body.value] ?: 0xFF9D)
 
-                writeShort(slotOffset + charOffset + Offsets.ARM, Items.inverseUniversal[it.character.arm.value] ?: 0xFF9D)
+                writer.writeShort(slotOffset + charOffset + Offsets.ARM, Items.inverseUniversal[it.character.arm.value] ?: 0xFF9D)
 
                 charOffset += Offsets.CHAR_SEPARATION
             }
@@ -254,43 +252,43 @@ class SaveFileController: Controller() {
         fire(InventoryRequest())
     }
 
-    //Reads data of specified size from save file at specified offset
-    private fun readData(position: Long, size: Int): ByteBuffer {
-        reader?.position(position)
+//  Reads data of specified size from save file at specified offset
+    private fun FileChannel.readData(pos: Long, size: Int): ByteBuffer {
+        position(pos)
         val dataBuffer = ByteBuffer.allocate(size)
         dataBuffer.order(ByteOrder.LITTLE_ENDIAN)
         do {
-            reader?.read(dataBuffer)
+            read(dataBuffer)
         } while(dataBuffer.hasRemaining())
         dataBuffer.flip()
         return dataBuffer
     }
 
-    private fun writeInt(position: Long, data: Int) {
-        writer?.position(position)
+//  Functions to write data to file
+    private fun FileChannel.writeInt(pos: Long, data: Int) {
+        position(pos)
         val dataBuffer = ByteBuffer.allocate(4)
         dataBuffer.order(ByteOrder.LITTLE_ENDIAN)
         dataBuffer.putInt(data)
         dataBuffer.rewind()
-        writer?.write(dataBuffer)
+        write(dataBuffer)
     }
 
-    private fun writeShort(position: Long, data: Int) {
-        writer?.position(position)
+    private fun FileChannel.writeShort(pos: Long, data: Int) {
+        position(pos)
         val dataBuffer = ByteBuffer.allocate(2)
         dataBuffer.order(ByteOrder.LITTLE_ENDIAN)
-        dataBuffer.putShort(data.toShort())
+        dataBuffer.putInt(data)
         dataBuffer.rewind()
-        writer?.write(dataBuffer)
+        write(dataBuffer)
     }
 
-    private fun writeByte(position: Long, data: Int) {
-        writer?.position(position)
+    private fun FileChannel.writeByte(pos: Long, data: Int) {
+        position(pos)
         val dataBuffer = ByteBuffer.allocate(1)
         dataBuffer.order(ByteOrder.LITTLE_ENDIAN)
-        dataBuffer.put(data.toByte())
+        dataBuffer.putInt(data)
         dataBuffer.rewind()
-        writer?.write(dataBuffer)
+        write(dataBuffer)
     }
-
 }

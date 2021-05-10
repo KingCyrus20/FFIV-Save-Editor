@@ -48,9 +48,9 @@ class MainView: View("FFIV Save Editor") {
                         val backupNum = saveFileCtrl.writeSave()
                         dialog("Save Successful") {
                             text = if (backupNum == 0)
-                                "Backup saved as " + saveFileCtrl.file?.toPath().toString() + ".NEW"
+                                "Backup saved as " + saveFileCtrl.file?.toPath().toString() + ".BAK"
                             else
-                                "Backup saved as " + saveFileCtrl.file?.toPath().toString() + ".NEW" + backupNum.toString()
+                                "Backup saved as " + saveFileCtrl.file?.toPath().toString() + ".BAK" + backupNum.toString()
                         }
                     }
                 }
@@ -190,7 +190,7 @@ class MainView: View("FFIV Save Editor") {
                                                 owner = currentWindow, title = "")
                                     }
 
-                                    else if (addItemQuantity > 99 || addItemQuantity < 1) {
+                                    else if (addItemQuantity.value !in 1..99) {
                                         error("Invalid Quantity", "Enter a number between 1 and 99",
                                                 buttons = *arrayOf(ButtonType.OK), owner = currentWindow, title = "")
                                     }
