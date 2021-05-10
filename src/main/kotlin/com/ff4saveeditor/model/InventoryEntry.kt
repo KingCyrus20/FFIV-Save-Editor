@@ -13,4 +13,15 @@ class InventoryEntry(id: Int, quantity: Int) {
 
     val quantityProperty = SimpleIntegerProperty(quantity)
     var quantity by quantityProperty
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null)
+            return false
+        other as InventoryEntry
+        return name == other.name
+    }
+
+    override fun toString(): String{
+        return name
+    }
 }

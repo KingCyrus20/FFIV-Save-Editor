@@ -42,6 +42,8 @@ class SaveFileController: Controller() {
     val saveFile = saveFileScope.saveFile
     private val saveSlots: ObservableList<SaveSlotController> = saveFile.saveSlotControllers.value
     var reader: FileChannel? = null
+    var writer: FileChannel? = null
+    var file: File? = null
 
     init {
         saveFile.loaded.value = false
@@ -52,7 +54,8 @@ class SaveFileController: Controller() {
     }
 
     fun loadSave(f: File) {
-        reader = FileChannel.open(f.toPath(), StandardOpenOption.READ)
+        file = f
+        reader = FileChannel.open(file!!.toPath(), StandardOpenOption.READ)
         var slotOffset = 0L
 
 //      Read data from file into each save slot, adjust slotOffset to next "cd1000" string each iteration
@@ -91,7 +94,7 @@ class SaveFileController: Controller() {
             for (monsterOffset in Monsters.monsterMap.keys) {
                 val monsterBuffer = readData(slotOffset + monsterOffset, 2)
                 val monsterValue = monsterBuffer.short.toInt()
-                val numSlain = (monsterValue and 0x00F0)/16 + (monsterValue and 0x0F00)/16 + (monsterValue and 0xF000)/16
+                val numSlain = (monsterValue and 0xFFF0)/16
                 val isNew = (monsterValue and 0x0002) shr 1 == 1
                 val isSeen = (monsterValue and 0x0001) == 1
                 it.saveSlot.bestiary.value.add(BestiaryEntry(Monsters.monsterMap[monsterOffset], isSeen, isNew, numSlain))
@@ -154,6 +157,94 @@ class SaveFileController: Controller() {
         chooseSlot(0)
     }
 
+    fun writeSave():Int {
+//      Make backup save
+        var backup = File(file?.toPath().toString() + ".BAK")
+        var backupNum = 0
+        while (backup.exists()) {
+            backupNum++
+            backup = File(file?.toPath().toString() + ".BAK" + backupNum.toString())
+        }
+        file?.copyTo(backup)
+
+        writer = FileChannel.open(file?.toPath(), StandardOpenOption.WRITE)
+        var slotOffset = 0L
+
+//      Write from save slot models into save file, adjust slotOffset to next "cd1000" string each iteration
+        saveSlots.forEach {
+            writeInt(slotOffset + Offsets.GIL, it.saveSlot.gil.value.toInt())
+
+            val totalSeconds =
+                it.saveSlot.hours.value.toInt() * 3600 + it.saveSlot.minutes.value.toInt() * 60 + it.saveSlot.seconds.value.toInt()
+            writeInt(slotOffset + Offsets.TIME, totalSeconds)
+
+//          Write inventory
+            writeInt(slotOffset + Offsets.ITEM_COUNT, it.saveSlot.inventory.value.size)
+
+            var itemOffset = Offsets.FIRST_ITEM
+            var quantityOffset = Offsets.FIRST_QUANTITY
+
+            for (i in 0 until it.saveSlot.inventory.value.size) {
+                writeShort(slotOffset + itemOffset, it.saveSlot.inventory.value[i].id)
+                writeShort(slotOffset + quantityOffset, it.saveSlot.inventory.value[i].quantity)
+
+                itemOffset += Offsets.ITEM_SEPARATION
+                quantityOffset += Offsets.ITEM_SEPARATION
+            }
+
+//          Write bestiary
+            for ((bestiaryIterator, monsterOffset) in Monsters.monsterMap.keys.withIndex()) {
+                val currentMonster = it.saveSlot.bestiary.value[bestiaryIterator]
+                var monsterValue = 0
+                if (currentMonster.seen)
+                    monsterValue += 0x0001
+                if (currentMonster.isNew)
+                    monsterValue += 0x0002
+                monsterValue += currentMonster.numSlain * 16
+                writeShort(slotOffset + monsterOffset, monsterValue)
+            }
+
+//          Write character data
+            var charOffset = Offsets.FIRST_CHAR
+            it.saveSlot.characterControllers.value.forEach {
+                writeByte(slotOffset + charOffset, it.character.level.value.toInt())
+
+                writeInt(slotOffset + charOffset + Offsets.CURR_HP, it.character.currHP.value.toInt())
+
+                writeInt(slotOffset + charOffset + Offsets.MAX_HP, it.character.maxHP.value.toInt())
+
+                writeInt(slotOffset + charOffset + Offsets.CURR_MP, it.character.currMP.value.toInt())
+
+                writeInt(slotOffset + charOffset + Offsets.MAX_MP, it.character.maxMP.value.toInt())
+
+                writeByte(slotOffset + charOffset + Offsets.STRENGTH, it.character.strength.value.toInt())
+
+                writeByte(slotOffset + charOffset + Offsets.STAMINA, it.character.stamina.value.toInt())
+
+                writeByte(slotOffset + charOffset + Offsets.SPEED, it.character.speed.value.toInt())
+
+                writeByte(slotOffset + charOffset + Offsets.INTELLECT, it.character.intellect.value.toInt())
+
+                writeByte(slotOffset + charOffset + Offsets.SPIRIT, it.character.spirit.value.toInt())
+
+                writeShort(slotOffset + charOffset + Offsets.RIGHT_HAND, Items.inverseUniversal[it.character.rightHand.value] ?: 0xFF9D)
+
+                writeShort(slotOffset + charOffset + Offsets.LEFT_HAND, Items.inverseUniversal[it.character.leftHand.value] ?: 0xFF9D)
+
+                writeShort(slotOffset + charOffset + Offsets.HEAD, Items.inverseUniversal[it.character.head.value] ?: 0xFF9D)
+
+                writeShort(slotOffset + charOffset + Offsets.BODY, Items.inverseUniversal[it.character.body.value] ?: 0xFF9D)
+
+                writeShort(slotOffset + charOffset + Offsets.ARM, Items.inverseUniversal[it.character.arm.value] ?: 0xFF9D)
+
+                charOffset += Offsets.CHAR_SEPARATION
+            }
+
+            slotOffset += Offsets.SLOT_SEPARATION
+        }
+        return backupNum
+    }
+
     fun chooseSlot(index: Int) {
         saveSlots[index].select()
         for (i in 0..2) {
@@ -173,6 +264,33 @@ class SaveFileController: Controller() {
         } while(dataBuffer.hasRemaining())
         dataBuffer.flip()
         return dataBuffer
+    }
+
+    private fun writeInt(position: Long, data: Int) {
+        writer?.position(position)
+        val dataBuffer = ByteBuffer.allocate(4)
+        dataBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        dataBuffer.putInt(data)
+        dataBuffer.rewind()
+        writer?.write(dataBuffer)
+    }
+
+    private fun writeShort(position: Long, data: Int) {
+        writer?.position(position)
+        val dataBuffer = ByteBuffer.allocate(2)
+        dataBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        dataBuffer.putShort(data.toShort())
+        dataBuffer.rewind()
+        writer?.write(dataBuffer)
+    }
+
+    private fun writeByte(position: Long, data: Int) {
+        writer?.position(position)
+        val dataBuffer = ByteBuffer.allocate(1)
+        dataBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        dataBuffer.put(data.toByte())
+        dataBuffer.rewind()
+        writer?.write(dataBuffer)
     }
 
 }

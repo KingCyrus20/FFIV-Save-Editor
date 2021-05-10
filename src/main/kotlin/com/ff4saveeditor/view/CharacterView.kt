@@ -18,6 +18,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 40.0
                         maxWidth = 40.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.level })
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
 
@@ -42,6 +43,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 40.0
                         maxWidth = 40.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.currMP })
+                        filterInput { it.controlNewText.isInt() }
                     }
 
                     label("/")
@@ -50,6 +52,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 40.0
                         maxWidth = 40.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.maxMP })
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
 
@@ -58,6 +61,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 40.0
                         maxWidth = 40.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.strength })
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
 
@@ -66,6 +70,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 40.0
                         maxWidth = 40.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.speed })
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
 
@@ -74,6 +79,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 40.0
                         maxWidth = 40.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.stamina })
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
 
@@ -82,6 +88,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 40.0
                         maxWidth = 40.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.intellect })
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
 
@@ -90,6 +97,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 40.0
                         maxWidth = 40.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.spirit })
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
             }

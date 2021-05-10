@@ -3,7 +3,7 @@ package com.ff4saveeditor.model
 //Companion object storing map of item id-name pairs
 class Items {
     companion object {
-        val itemMap = mutableMapOf<Int, String>(
+        private val itemMap = mutableMapOf<Int, String>(
                 0x1389 to "Potion",
                 0x138A to "Hi-Potion",
                 0x138B to "X-Potion",
@@ -73,5 +73,9 @@ class Items {
                 .distinct()
                 .groupBy ({it.key}, {it.value})
                 .mapValues { (_, values) -> values.joinToString() }
+
+        private fun <String, Int> Map<String, Int>.inverseMap() = map { Pair(it.value, it.key) }.toMap()
+
+        val inverseUniversal = universalMap.inverseMap()
     }
 }

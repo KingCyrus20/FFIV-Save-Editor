@@ -4,7 +4,11 @@ import com.ff4saveeditor.app.InventoryEvent
 import com.ff4saveeditor.app.InventoryRequest
 import com.ff4saveeditor.model.*
 import javafx.application.Platform
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonType
 import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
 import javafx.util.StringConverter
@@ -18,6 +22,10 @@ class MainView: View("FFIV Save Editor") {
     private val characterViews = List<CharacterView>(14) { i -> CharacterView(i, saveFileCtrl) }
     private val characterNames = listOf("Cecil (Dark Knight)", "Cecil (Paladin)", "Kain", "Rosa", "Rydia (Child)", "Rydia (Adult)", "Tellah",
             "Edward", "Porom", "Palom", "Yang", "Cid", "Edge", "Fusoya")
+
+    //Properties for add item fieldset
+    private val addItem = SimpleStringProperty("")
+    private val addItemQuantity = SimpleIntegerProperty(0)
 
     override val root = form {
         paddingAll = 0
@@ -34,7 +42,18 @@ class MainView: View("FFIV Save Editor") {
                     }
                 }
 
-                item("Save")
+                item("Save") {
+                    enableWhen(saveFile.loaded)
+                    action {
+                        val backupNum = saveFileCtrl.writeSave()
+                        dialog("Save Successful") {
+                            text = if (backupNum == 0)
+                                "Backup saved as " + saveFileCtrl.file?.toPath().toString() + ".NEW"
+                            else
+                                "Backup saved as " + saveFileCtrl.file?.toPath().toString() + ".NEW" + backupNum.toString()
+                        }
+                    }
+                }
 
                 separator()
 
@@ -139,13 +158,14 @@ class MainView: View("FFIV Save Editor") {
                                     maxWidth = 40.0
                                     minWidth = 40.0
                                     bind(saveFile.currentSlot.select { it.saveSlot.selectedItem.select { it.quantityProperty } })
+                                    filterInput { it.controlNewText.isInt() }
                                 }
                             }
                         }
 
                         fieldset("Add Item") {
                             field("Item") {
-                                combobox<String>() {
+                                combobox<String>(addItem) {
                                     isEditable = true
                                     makeAutocompletable()
                                     items.setAll(Items.universalMap.values)
@@ -156,11 +176,38 @@ class MainView: View("FFIV Save Editor") {
                                 textfield {
                                     maxWidth = 40.0
                                     minWidth = 40.0
+                                    bind(addItemQuantity)
+                                    filterInput { it.controlNewText.isInt() }
                                 }
                             }
 
                             button("Add") {
+                                enableWhen(saveFile.loaded)
+                                setOnAction {
+                                    if (!Items.inverseUniversal.keys.contains(addItem.value)) {
+                                        error( "Invalid Item",
+                                                "Choose a valid item from the dropdown", buttons = *arrayOf(ButtonType.OK),
+                                                owner = currentWindow, title = "")
+                                    }
 
+                                    else if (addItemQuantity > 99 || addItemQuantity < 1) {
+                                        error("Invalid Quantity", "Enter a number between 1 and 99",
+                                                buttons = *arrayOf(ButtonType.OK), owner = currentWindow, title = "")
+                                    }
+
+                                    else {
+                                        val newItem = Items.inverseUniversal[addItem.value]?.let { it1 -> InventoryEntry(it1, addItemQuantity.value) }
+                                        if (saveFile.currentSlot.value.saveSlot.inventory.value.contains(newItem)) {
+                                            error("Already have item", "This item is already in your inventory",
+                                                buttons = *arrayOf(ButtonType.OK), owner = currentWindow, title = "")
+                                        }
+
+                                        else {
+                                            saveFile.currentSlot.value.saveSlot.inventory.value.add(newItem)
+                                            fire(InventoryRequest())
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
