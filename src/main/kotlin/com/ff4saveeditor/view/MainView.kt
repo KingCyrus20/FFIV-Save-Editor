@@ -16,6 +16,7 @@ import tornadofx.*
 import java.io.File
 
 class MainView: View("FFIV Save Editor") {
+    private val bigIntRegex = Regex("^(\\d+(,\\d+)*)?\$")
     private val saveFileCtrl: SaveFileController by inject()
     private val saveFile = saveFileCtrl.saveFile
     private val saveSlots = saveFile.saveSlotControllers.value
@@ -91,6 +92,7 @@ class MainView: View("FFIV Save Editor") {
                 field("Gil") {
                     textfield {
                         bind(saveFile.currentSlot.select { it.saveSlot.gil })
+                        filterInput { it.controlNewText.matches(bigIntRegex) || (it.text.equals(",") && !it.controlNewText.equals(",")) }
                     }
                 }
                 paddingHorizontal = 10
@@ -104,6 +106,7 @@ class MainView: View("FFIV Save Editor") {
                         bind(saveFile.currentSlot.select { it.saveSlot.hours })
                         minWidth = 40.0
                         maxWidth = 40.0
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
                 paddingHorizontal = 10
@@ -114,6 +117,7 @@ class MainView: View("FFIV Save Editor") {
                         bind(saveFile.currentSlot.select { it.saveSlot.minutes })
                         minWidth = 40.0
                         maxWidth = 40.0
+                        filterInput {it.controlNewText.isInt()}
                     }
                 }
                 paddingHorizontal = 10
@@ -124,6 +128,7 @@ class MainView: View("FFIV Save Editor") {
                         bind(saveFile.currentSlot.select { it.saveSlot.seconds })
                         minWidth = 40.0
                         maxWidth = 40.0
+                        filterInput {it.controlNewText.isInt()}
                     }
                 }
                 paddingHorizontal = 10

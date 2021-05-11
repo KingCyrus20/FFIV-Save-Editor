@@ -9,6 +9,7 @@ import javax.swing.GroupLayout
 
 //Repeatable fragment for character tabs
 class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
+    private val bigIntRegex = Regex("^(\\d+(,\\d+)*)?\$")
     private val saveFile = saveFileCtrl.saveFile
     override val root = form {
         hbox(50) {
@@ -27,6 +28,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 50.0
                         maxWidth = 50.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.currHP })
+                        filterInput { it.controlNewText.matches(bigIntRegex) || (it.text.equals(",") && !it.controlNewText.equals(",")) }
                     }
 
                     label("/")
@@ -35,6 +37,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 50.0
                         maxWidth = 50.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.maxHP })
+                        filterInput { it.controlNewText.matches(bigIntRegex) || (it.text.equals(",") && !it.controlNewText.equals(",")) }
                     }
                 }
 
@@ -105,40 +108,40 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
             fieldset("Equipment: ") {
                 field("Right Hand: ") {
                     combobox<String> {
-                        this.items = FXCollections.observableArrayList(Equipment.handMap.values)
-                        this.items.add(0, "Empty")
+                        items = FXCollections.observableArrayList(Equipment.handMap.values)
+                        items.add(0, "Empty")
                         bind(saveFile.currentSlot.select { it.characters[index].character.rightHand })
                     }
                 }
 
                 field("Left Hand: ") {
                     combobox<String> {
-                        this.items = FXCollections.observableArrayList(Equipment.handMap.values)
-                        this.items.add(0, "Empty")
+                        items = FXCollections.observableArrayList(Equipment.handMap.values)
+                        items.add(0, "Empty")
                         bind(saveFile.currentSlot.select { it.characters[index].character.leftHand })
                     }
                 }
 
                 field("Head: ") {
                     combobox<String> {
-                        this.items = FXCollections.observableArrayList(Equipment.headMap.values)
-                        this.items.add(0, "Empty")
+                        items = FXCollections.observableArrayList(Equipment.headMap.values)
+                        items.add(0, "Empty")
                         bind(saveFile.currentSlot.select { it.characters[index].character.head })
                     }
                 }
 
                 field("Body: ") {
                     combobox<String> {
-                        this.items = FXCollections.observableArrayList(Equipment.bodyMap.values)
-                        this.items.add(0, "Empty")
+                        items = FXCollections.observableArrayList(Equipment.bodyMap.values)
+                        items.add(0, "Empty")
                         bind(saveFile.currentSlot.select { it.characters[index].character.body })
                     }
                 }
 
                 field("Arm: ") {
                     combobox<String> {
-                        this.items = FXCollections.observableArrayList(Equipment.armMap.values)
-                        this.items.add(0, "Empty")
+                        items = FXCollections.observableArrayList(Equipment.armMap.values)
+                        items.add(0, "Empty")
                         bind(saveFile.currentSlot.select { it.characters[index].character.arm })
                     }
                 }
