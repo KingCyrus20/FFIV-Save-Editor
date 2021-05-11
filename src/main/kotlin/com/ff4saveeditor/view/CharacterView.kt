@@ -28,7 +28,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 50.0
                         maxWidth = 50.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.currHP })
-                        filterInput { it.controlNewText.matches(bigIntRegex) || (it.text.equals(",") && !it.controlNewText.equals(",")) }
+                        filterInput { it.controlNewText.matches(bigIntRegex) || (it.text.equals(",") && it.controlNewText.contains(Regex("[0-9]"))) }
                     }
 
                     label("/")
@@ -37,7 +37,7 @@ class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
                         minWidth = 50.0
                         maxWidth = 50.0
                         bind(saveFile.currentSlot.select { it.characters[index].character.maxHP })
-                        filterInput { it.controlNewText.matches(bigIntRegex) || (it.text.equals(",") && !it.controlNewText.equals(",")) }
+                        filterInput { it.controlNewText.matches(bigIntRegex) || (it.text.equals(",") && it.controlNewText.contains(Regex("[0-9]"))) }
                     }
                 }
 

@@ -92,7 +92,7 @@ class MainView: View("FFIV Save Editor") {
                 field("Gil") {
                     textfield {
                         bind(saveFile.currentSlot.select { it.saveSlot.gil })
-                        filterInput { it.controlNewText.matches(bigIntRegex) || (it.text.equals(",") && !it.controlNewText.equals(",")) }
+                        filterInput { it.controlNewText.matches(bigIntRegex) || (it.text.equals(",") && it.controlNewText.contains(Regex("[0-9]"))) }
                     }
                 }
                 paddingHorizontal = 10
