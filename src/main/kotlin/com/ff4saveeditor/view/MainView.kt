@@ -50,7 +50,7 @@ class MainView: View("FFIV Save Editor") {
                             text = if (backupNum == 0)
                                 "Backup saved as " + saveFileCtrl.file?.toPath().toString() + ".BAK"
                             else
-                                "Backup saved as " + saveFileCtrl.file?.toPath().toString() + ".BAK" + backupNum.toString()
+                                "Backup saved as " + saveFileCtrl.file?.toPath().toString() + ".BAK" + backupNum
                         }
                     }
                 }

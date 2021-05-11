@@ -161,7 +161,7 @@ class SaveFileController: Controller() {
         var backupNum = 0
         while (backup.exists()) {
             backupNum++
-            backup = File(file?.toPath().toString() + ".BAK" + backupNum.toString())
+            backup = File(file?.toPath().toString() + ".BAK" + backupNum)
         }
         file?.copyTo(backup)
 
