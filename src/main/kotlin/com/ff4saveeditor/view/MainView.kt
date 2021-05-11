@@ -6,12 +6,9 @@ import com.ff4saveeditor.model.*
 import javafx.application.Platform
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.collections.FXCollections
-import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
-import javafx.util.StringConverter
 import tornadofx.*
 import java.io.File
 

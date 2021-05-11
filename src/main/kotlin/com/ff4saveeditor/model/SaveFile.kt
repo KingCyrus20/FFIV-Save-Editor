@@ -3,18 +3,17 @@ package com.ff4saveeditor.model
 import com.ff4saveeditor.app.InventoryEvent
 import com.ff4saveeditor.app.InventoryRequest
 import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import tornadofx.*
+import tornadofx.Controller
+import tornadofx.ItemViewModel
+import tornadofx.Scope
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
-import java.util.*
 
 class SaveFile {
     val saveSlotControllers: ObservableList<SaveSlotController> = FXCollections.observableArrayList<SaveSlotController>()

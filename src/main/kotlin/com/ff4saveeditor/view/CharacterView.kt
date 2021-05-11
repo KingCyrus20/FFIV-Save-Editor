@@ -3,9 +3,7 @@ package com.ff4saveeditor.view
 import com.ff4saveeditor.model.Equipment
 import com.ff4saveeditor.model.SaveFileController
 import javafx.collections.FXCollections
-import javafx.geometry.Pos
 import tornadofx.*
-import javax.swing.GroupLayout
 
 //Repeatable fragment for character tabs
 class CharacterView(index:Int, saveFileCtrl:SaveFileController):Fragment() {
